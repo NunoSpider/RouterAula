@@ -262,8 +262,15 @@ public class Routing {
             Log("Too many entries in routing table - ROUTE not sent\n");
             return false;
         }
-
-        Log("Routing.send_local_ROUTE() not implemented\n");
+        
+        for (var pt : neig.values()){
+            if (pt.is_valid()){
+                Entry[] vec = prepare_vec_for_neighbour(pt);
+                if (vec!= null) {
+                 send_local_ROUTE_to_neighbour(pt, vec);
+                }
+            }
+        }
         // COMPLETE IN STEP 1 
         // send the local vector to all the neighbor routers, one by one
         //    using the methods above (prepare_vec_for_neighbour and send_local_ROUTE_to_neighbour)
@@ -340,12 +347,10 @@ public class Routing {
                 Log("\nERROR - Invalid sender name (" + sender + "), different from the neigbour table\n");
                 return false;
             }
-
-            // Update Router vector
-            Log("Routing.process_ROUTE not implemented: ROUTE vector not stored\n");
-            
-            // STEP 3:
-            //   Put here the code to store the vector received in the neighbour object associated            
+         
+            pt.update_vec(data, TTL);
+           
+                        
             return true;
         } catch (IOException e) {
             Log("\nERROR - Packet too short\n");
@@ -460,9 +465,19 @@ public class Routing {
     /**
      * Run the timer responsible for sending periodic ROUTE packets to routers
      */
-    private void start_announce_timer() {
-        Log("Routing.start_announce_timer() not implemented\n");
+    private void start_announce_timer() { // Create a swing timer 
+        timer_announce = new javax.swing.Timer (period * 1000, new ActionListener(){
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                update_routing_table();
+                send_local_ROUTE();
+            } 
+        });
+        timer_announce.setRepeats(true);
+        timer_announce.start();
         
+    
+   
         // STEP 2:
         // Place here the code to create the timer_announce object and define the
         //    timeout event handler
