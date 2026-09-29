@@ -271,6 +271,7 @@ public class Routing {
                 }
             }
         }
+       
         // COMPLETE IN STEP 1 
         // send the local vector to all the neighbor routers, one by one
         //    using the methods above (prepare_vec_for_neighbour and send_local_ROUTE_to_neighbour)
