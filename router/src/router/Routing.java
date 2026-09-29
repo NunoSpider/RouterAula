@@ -412,7 +412,30 @@ public class Routing {
         tab.add_route(new RouteEntry(local_name /* destination*/, 
                 ' ' /* next hop*/, 0 /* distance */, win));
 
-        Log("Routing.update_routing_table not implemented\n");
+       //  Log("Routing.update_routing_table not implemented\n");
+      
+        for (Neighbour n :  neig.values()) {
+            if (!n.is_valid() || !n.vec_valid()){ 
+                continue;
+            }
+            int dis_to_neig = n.Dist();
+            if (dis_to_neig >= Router.MAX_DISTANCE){
+                continue;
+            }
+            for  (Entry e: n.Vec()) {
+                if (e.dest == local_name) {
+                    continue;
+            }   
+            int total = dis_to_neig + e.dist;
+            if (total>=Router.MAX_DISTANCE) {
+                continue;
+            } 
+            RouteEntry current = tab.get_RouteEntry(e.dest);
+            if ((current == null) || (total< current.dist)) {
+                tab.add_route(new RouteEntry(e.dest, n.Name(),total, win));
+            }
+        }
+    }
         // Implement here the distance vector algorithm:            
         // STEP 4:
         //      Implement the basic DV algorithm
